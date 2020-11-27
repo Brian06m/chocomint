@@ -36,13 +36,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import javax.imageio.ImageIO;
 
+import io.undervolt.gui.chat.Chat;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.audio.MusicTicker;
 import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiChat;
 import net.minecraft.client.gui.GuiControls;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiIngame;
@@ -585,11 +585,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
         if (this.serverName != null)
         {
-            this.displayGuiScreen(new GuiConnecting(new GuiMainMenu(), this, this.serverName, this.serverPort));
+            this.displayGuiScreen(new GuiConnecting(new GuiMainMenu(this.getChocomint()), this, this.serverName, this.serverPort));
         }
         else
         {
-            this.displayGuiScreen(new GuiMainMenu());
+            this.displayGuiScreen(new GuiMainMenu(this.getChocomint()));
         }
 
         this.renderEngine.deleteTexture(this.mojangLogo);
@@ -655,7 +655,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             }
             catch (InterruptedException var3)
             {
-                ;
+                var3.printStackTrace();
             }
 
             if (this.fullscreen)
@@ -754,7 +754,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                     }
                     catch (InterruptedException var2)
                     {
-                        ;
+                        var2.printStackTrace();
                     }
                 }
             }
@@ -1007,7 +1007,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
         if (guiScreenIn == null && this.theWorld == null)
         {
-            guiScreenIn = new GuiMainMenu();
+            guiScreenIn = new GuiMainMenu(this.getChocomint());
         }
         else if (guiScreenIn == null && this.thePlayer.getHealth() <= 0.0F)
         {
@@ -1074,7 +1074,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
             }
             catch (Throwable var5)
             {
-                ;
+                var5.printStackTrace();
             }
 
             this.mcSoundHandler.unloadSounds();
@@ -1298,7 +1298,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
         }
         catch (Throwable var2)
         {
-            ;
+            var2.printStackTrace();
         }
 
         System.gc();
@@ -1503,7 +1503,7 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
     {
         if (this.currentScreen == null)
         {
-            this.displayGuiScreen(new GuiIngameMenu());
+            this.displayGuiScreen(new GuiIngameMenu(this.getChocomint()));
 
             if (this.isSingleplayer() && !this.theIntegratedServer.getPublic())
             {
@@ -1977,31 +1977,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                             this.refreshResources();
                         }
 
-                        if (k == 17 && Keyboard.isKeyDown(61))
-                        {
-                            ;
-                        }
-
-                        if (k == 18 && Keyboard.isKeyDown(61))
-                        {
-                            ;
-                        }
-
-                        if (k == 47 && Keyboard.isKeyDown(61))
-                        {
-                            ;
-                        }
-
-                        if (k == 38 && Keyboard.isKeyDown(61))
-                        {
-                            ;
-                        }
-
-                        if (k == 22 && Keyboard.isKeyDown(61))
-                        {
-                            ;
-                        }
-
                         if (k == 20 && Keyboard.isKeyDown(61))
                         {
                             this.refreshResources();
@@ -2131,12 +2106,12 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
 
             while (this.gameSettings.keyBindPlayerList.isPressed() && flag)
             {
-                this.displayGuiScreen(new GuiChat());
+                this.displayGuiScreen(new Chat("", null, this.getChocomint(), this.currentServerData));
             }
 
             if (this.currentScreen == null && this.gameSettings.keyBindScreenshot.isPressed() && flag)
             {
-                this.displayGuiScreen(new GuiChat("/"));
+                this.displayGuiScreen(new Chat("/", null, this.getChocomint(), this.currentServerData));
             }
 
             if (this.thePlayer.isUsingItem())
@@ -2144,21 +2119,6 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 if (!this.gameSettings.keyBindDrop.isKeyDown())
                 {
                     this.playerController.onStoppedUsingItem(this.thePlayer);
-                }
-
-                while (this.gameSettings.keyBindPickBlock.isPressed())
-                {
-                    ;
-                }
-
-                while (this.gameSettings.keyBindDrop.isPressed())
-                {
-                    ;
-                }
-
-                while (this.gameSettings.keyBindChat.isPressed())
-                {
-                    ;
                 }
             }
             else
@@ -2340,13 +2300,11 @@ public class Minecraft implements IThreadListener, IPlayerUsage {
                 this.loadingScreen.displayLoadingString("");
             }
 
-            try
-            {
+            try {
                 Thread.sleep(200L);
             }
-            catch (InterruptedException var9)
-            {
-                ;
+            catch (InterruptedException var9) {
+                var9.printStackTrace();
             }
         }
 

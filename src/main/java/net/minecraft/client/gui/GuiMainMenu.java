@@ -13,6 +13,9 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.undervolt.gui.GameBar;
+import io.undervolt.gui.GameBarButton;
+import io.undervolt.gui.chat.Chat;
+import io.undervolt.instance.Chocomint;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
@@ -39,7 +42,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.util.glu.Project;
 
-public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
+public class GuiMainMenu extends GameBar implements GuiYesNoCallback
 {
     private static final AtomicInteger field_175373_f = new AtomicInteger(0);
     private static final Logger logger = LogManager.getLogger();
@@ -88,6 +91,9 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     private int field_92019_w;
     private ResourceLocation backgroundTexture;
 
+    /** Chat button */
+    private GameBarButton chatButton;
+
     /** Minecraft Realms button. */
     private GuiButton realmsButton;
     private boolean L;
@@ -95,8 +101,9 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
     private GuiButton modButton;
     private GuiScreen modUpdateNotification;
 
-    public GuiMainMenu()
+    public GuiMainMenu(final Chocomint chocomint)
     {
+        super(null, chocomint);
         this.openGLWarning2 = field_96138_a;
         this.L = false;
         this.splashText = "missingno";
@@ -201,6 +208,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
      */
     public void initGui()
     {
+        this.setBackgroundDrawing(false);
         this.viewportTexture = new DynamicTexture(256, 256);
         this.backgroundTexture = this.mc.getTextureManager().getDynamicTextureLocation("background", this.viewportTexture);
         Calendar calendar = Calendar.getInstance();
@@ -246,6 +254,9 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
             this.field_92019_w = this.field_92021_u + 24;
         }
 
+        this.buttonList.add(chatButton = new GameBarButton(103,
+                this.width - 52, this.height - 15, 50, 15, "Chat"));
+
         this.mc.setConnectedToRealms(false);
 
         if (Minecraft.getMinecraft().gameSettings.getOptionOrdinalValue(GameSettings.Options.enumFloat) && !this.L)
@@ -260,6 +271,8 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
             this.M.a(this.width, this.height);
             this.M.initGui();
         }
+        super.initGui();
+
     }
 
     /**
@@ -314,7 +327,7 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
 
         if (button.id == 1)
         {
-            this.mc.displayGuiScreen(new GameBar(this, this.mc.mint));
+            this.mc.displayGuiScreen(new GuiSelectWorld(this));
         }
 
         if (button.id == 2)
@@ -353,6 +366,9 @@ public class GuiMainMenu extends GuiScreen implements GuiYesNoCallback
                 this.mc.displayGuiScreen(guiyesno);
             }
         }
+        if(button.id == 103) this.mc.displayGuiScreen(new Chat("", this, this.mc.getChocomint(), null));
+
+        super.actionPerformed(button);
     }
 
     private void f()
